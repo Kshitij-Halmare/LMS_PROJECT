@@ -1,7 +1,8 @@
 import userModel from "../Model/UserModel.js";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken"
 
-export default async function login(req, res) {
+export default async function handlelogin(req, res) {
   try {
     const { email, password } = req.body;
 
@@ -31,6 +32,25 @@ export default async function login(req, res) {
       });
     }
 
+    const token = jwt.sign(
+      {
+        id: user._id,
+        email: user.email,
+        profession: user.profession, // 'Student' or 'Teacher'
+      },
+      process.env.JWT_SECRET, // Your JWT secret from .env
+      { expiresIn: "24h" } // Token expiry set to 24 hours
+    );
+
+    res.cookie("token", token, {
+      httpOnly: true, // This ensures the cookie cannot be accessed via JavaScript
+      secure: process.env.NODE_ENV === "production", // Use HTTPS only in production
+      maxAge: 24 * 3600000, 
+      sameSite: 'None'
+    });
+    console.log(token);
+    
+
     // If the login is successful, prepare the response
     return res.status(200).json({
       message: "User logged in successfully",
@@ -51,3 +71,4 @@ export default async function login(req, res) {
     });
   }
 }
+

@@ -27,7 +27,7 @@ const ConsistencyCalendar = ({ userId }) => {
   return (
     <div className="max-w-xs mx-auto p-4 bg-white shadow-md shadow-black rounded-lg">
       <h2 className="text-xl font-semibold text-center mb-4">Lesson Consistency</h2>
-      <Calendar
+      <Calendar 
         tileClassName={tileClassName} // Apply custom classes to tiles
         className="border-none text-xs" // Smaller text for a compact look
         next2Label={null} // Remove double arrows for navigation

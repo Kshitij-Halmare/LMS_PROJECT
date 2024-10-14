@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { MdEmail } from "react-icons/md";
 import { RiLockPasswordFill } from "react-icons/ri";
-import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import the icons for password visibility toggle
-import { useNavigate } from 'react-router-dom'; // Use the hook to navigate
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // Password visibility toggle icons
+import { useNavigate } from 'react-router-dom'; // useNavigate hook for navigation
 import toast from "react-hot-toast";
 
 function Login() {
@@ -12,7 +12,7 @@ function Login() {
     password: "",
   });
 
-  const [passwordVisible, setPasswordVisible] = useState(false); // To toggle password visibility
+  const [passwordVisible, setPasswordVisible] = useState(false); // Toggle password visibility
 
   const handleChange = (e) => {
     setUser({
@@ -23,25 +23,42 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Simple client-side validation for email and password
     if (user.email === "" || user.password === "") {
-      toast.error("All fields are required"); // Improved: error message format
+      toast.error("All fields are required");
       return;
     }
-    const req = await fetch(`${import.meta.env.VITE_SERVER_DOMAIN}/api/Login`, {
-      method: 'POST', // Corrected: 'POST' should be a string
-      headers: {
-        "Content-Type": "application/json", // Fixed typo in Content-Type
-      },
-      body: JSON.stringify(user),
-    });
 
-    if (req.ok) {
-      toast.success("User logged in successfully");
-      navigate("/home");
-    } else {
-      toast.error("Login failed, please try again"); // Added error toast for failed login
+    // Simple email validation regex (for demo purposes)
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(user.email)) {
+      toast.error("Please enter a valid email address");
+      return;
     }
-    console.log(user);
+
+    try {
+      const req = await fetch(`${import.meta.env.VITE_SERVER_DOMAIN}/api/login`, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(user),
+        credentials: "include", // Ensure cookies are sent with the request
+      });
+
+      // Handle server response
+      const data = await req.json();
+      if (req.ok) {
+        toast.success("User logged in successfully");
+        navigate("/home");
+      } else {
+        toast.error(data.message || "Login failed, please try again");
+      }
+    } catch (error) {
+      toast.error("An error occurred, please try again");
+      console.error("Login error:", error); // Log the error for debugging
+    }
   };
 
   return (
@@ -91,10 +108,10 @@ function Login() {
           </button>
         </form>
         <p className='pt-4'>
-          Not yet Signed up?{" "}
+          Not yet signed up?{" "}
           <span
-            className="text-blue-500 hover:underline  cursor-pointer"
-            onClick={() => navigate('/Signup')} // Fixed: navigate to signup
+            className="text-blue-500 hover:underline cursor-pointer"
+            onClick={() => navigate('/signup')} // Navigate to signup page
           >
             Sign Up
           </span>

@@ -11,6 +11,8 @@ import Message from "../Pages/Message.jsx"
 import Help from "../Pages/Help.jsx"
 import Login from "../components/Login.jsx"
 import TeacherSignup from "../components/TeacherSignup.jsx"
+import AddCourse from "../Pages/AddCourse.jsx"
+import ExistingCourse from "../Pages/ExistingCourse.jsx"
 const router=createBrowserRouter([
     {
         path:"/",
@@ -50,6 +52,12 @@ const router=createBrowserRouter([
         },{
             path:"/TeacherSignup",
             element:<TeacherSignup/>
+        },{
+            path:"/add-course",
+            element:<AddCourse/>
+        },{
+            path:"/existing-courses",
+            element:<ExistingCourse/>
         }
     ]
     }

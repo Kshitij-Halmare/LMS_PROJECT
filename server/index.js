@@ -3,14 +3,21 @@ import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import router from "./Routes/userRoutes.js";
+import cookieParser from 'cookie-parser';
 
 const app = express();
 
 // Load environment variables from .env file
 dotenv.config();
 
+app.use(cookieParser());
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: 'http://localhost:5173',  
+    credentials: true,               })
+);
+
 app.use("/api", router);
 
 // Define the port to listen on, default to 3000 if not defined in .env

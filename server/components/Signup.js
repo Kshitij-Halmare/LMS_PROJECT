@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import userModel from "../Model/UserModel.js";
+import jwt from "jsonwebtoken";
 
 export default async function Signup(req, res) {
   const { name, email, password, confirmpassword, profession } = req.body;
@@ -22,14 +23,17 @@ export default async function Signup(req, res) {
       success: false,
     });
   }
-try{
-  const userExists = await userModel.findOne({ email });
+
+  try {
+    // Check if the user already exists
+    const userExists = await userModel.findOne({ email });
     if (userExists) {
       return res.status(400).json({
         message: `User with the role of ${profession} already exists with this email`,
         success: false,
       });
     }
+
     // Hash the password using bcrypt
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -45,8 +49,25 @@ try{
     // Save the new user in the database
     const user = await userModel.create(newUser);
 
-    // Log the user data for debugging (optional)
     console.log("User Created: ", user);
+
+    // Generate JWT token
+    const token = jwt.sign(
+      {
+        id: user._id,
+        email: user.email,
+        profession: user.profession
+      },
+      process.env.JWT_SECRET, // Use your secret from .env
+      { expiresIn: "24h" } // Correct use of expiresIn
+    );
+
+    // Set token in an HTTP-only cookie
+    res.cookie("token", token, {
+      httpOnly: true, // Prevents JavaScript access to the cookie
+      secure: process.env.NODE_ENV === "production", // Use HTTPS only in production
+      maxAge: 24 * 3600000, // 24 hours in milliseconds
+    });
 
     // Return success response (without sending sensitive data)
     return res.status(201).json({
