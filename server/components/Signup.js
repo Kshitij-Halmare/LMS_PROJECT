@@ -1,11 +1,10 @@
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import userModel from "../Model/UserModel.js";
 import jwt from "jsonwebtoken";
 
 export default async function Signup(req, res) {
   const { name, email, password, confirmpassword, profession } = req.body;
 
-  // Log the input for debugging (remove in production)
   console.log("Request Body: ", { name, email, password, confirmpassword, profession });
 
   // Check if passwords match
@@ -59,14 +58,14 @@ export default async function Signup(req, res) {
         profession: user.profession
       },
       process.env.JWT_SECRET, // Use your secret from .env
-      { expiresIn: "24h" } // Correct use of expiresIn
+      { expiresIn: "24h" } // Token expiry set to 24 hours
     );
 
-    // Set token in an HTTP-only cookie
-    res.cookie("token", token, {
-      httpOnly: true, // Prevents JavaScript access to the cookie
-      secure: process.env.NODE_ENV === "production", // Use HTTPS only in production
-      maxAge: 24 * 3600000, // 24 hours in milliseconds
+    // Set the token in a secure cookie
+    res.cookie('token', token, {
+      httpOnly: true,    // Cookie can't be accessed via JavaScript
+      secure: process.env.NODE_ENV === 'production', // Ensure the cookie is sent only over HTTPS in production
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
     });
 
     // Return success response (without sending sensitive data)
@@ -82,7 +81,7 @@ export default async function Signup(req, res) {
       },
     });
   } catch (error) {
-    console.error("Signup error:", error.message); // Log error for debugging
+    console.error("Signup error:", error.message);
     return res.status(500).json({
       message: "An error occurred during signup",
       success: false,

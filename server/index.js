@@ -2,53 +2,38 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import router from "./Routes/userRoutes.js";
+import router from "./Routes/userRoutes.js"; // Ensure the correct path to the router
 import cookieParser from 'cookie-parser';
-
+import teacherRouter from "./Routes/teacherAuthen.js";
 const app = express();
 
-// Load environment variables from .env file
 dotenv.config();
-
+// app.options('*', cors()); // Allow preflight requests for all routes
 app.use(cookieParser());
 app.use(express.json());
 app.use(
-  cors({
-    origin: 'http://localhost:5173',  
-    credentials: true,               })
-);
+    cors({
+      origin: 'http://localhost:5173',  // Allow only your React app's origin
+      credentials: true,               // Allow cookies and authentication tokens
+    })
+  );
+  
+  
+  
 
-app.use("/api", router);
+app.use("/api", router);  // This adds the "/api" prefix to all routes in userRoutes.js
+app.use("/",teacherRouter);
 
-// Define the port to listen on, default to 3000 if not defined in .env
+// MongoDB connection and server start logic
 const port = process.env.PORT || 3000;
-
-// Basic route to test server
-app.get('/', (req, res) => {
-    res.send("yes");
-});
-
-// MongoDB connection URL from environment variables
-const url = process.env.URL;
-if (!url) {
-    console.error("MongoDB URL is missing from environment variables.");
-    process.exit(1); // Exit if no URL is provided
-}
-
-// Connect to MongoDB
-mongoose.connect(url, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
+mongoose.connect(process.env.URL, { useNewUrlParser: true, useUnifiedTopology: true })
 .then(() => {
-    console.log("Database Connected");
+  console.log("Database Connected");
 })
 .catch((err) => {
-    console.error("Database connection error:", err);
-    process.exit(1); // Exit if MongoDB connection fails
+  console.error("Database connection error:", err);
 });
 
-// Start the server
 app.listen(port, () => {
-    console.log(`Server is listening at port ${port}`);
+  console.log(`Server is listening at port ${port}`);
 });

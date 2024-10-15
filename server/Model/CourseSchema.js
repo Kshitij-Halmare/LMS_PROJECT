@@ -1,6 +1,5 @@
-import mongoose from "mongoose";
-
-const courseSchema = new mongoose.Schema({
+import mongoose from "mongoose"
+const courseSchema = mongoose.Schema({
   title: {
     type: String,
     required: true,
@@ -16,6 +15,10 @@ const courseSchema = new mongoose.Schema({
   image: {
     type: String, // URL or path to the course image
     required: true,
+  },
+  price: {
+    type: Number, // Change to Number instead of String
+    required: true
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,

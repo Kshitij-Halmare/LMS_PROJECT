@@ -1,6 +1,6 @@
 import userModel from "../Model/UserModel.js";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 
 export default async function handlelogin(req, res) {
   try {
@@ -32,6 +32,7 @@ export default async function handlelogin(req, res) {
       });
     }
 
+    // Generate JWT token
     const token = jwt.sign(
       {
         id: user._id,
@@ -42,16 +43,14 @@ export default async function handlelogin(req, res) {
       { expiresIn: "24h" } // Token expiry set to 24 hours
     );
 
-    res.cookie("token", token, {
-      httpOnly: true, // This ensures the cookie cannot be accessed via JavaScript
-      secure: process.env.NODE_ENV === "production", // Use HTTPS only in production
-      maxAge: 24 * 3600000, 
-      sameSite: 'None'
+    // Set the token in a secure cookie
+    res.cookie('token', token, {
+      httpOnly: true,    // Cookie can't be accessed via JavaScript
+      secure: process.env.NODE_ENV === 'production', // Ensure the cookie is sent only over HTTPS in production
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
     });
-    console.log(token);
-    
 
-    // If the login is successful, prepare the response
+    // Return success response (without sending sensitive data)
     return res.status(200).json({
       message: "User logged in successfully",
       success: true,
@@ -59,7 +58,7 @@ export default async function handlelogin(req, res) {
         id: user._id,
         name: user.name,
         email: user.email,
-        role: user.proffession, // 'Student' or 'Teacher'
+        profession: user.profession, // 'Student' or 'Teacher'
       },
     });
 
@@ -71,4 +70,3 @@ export default async function handlelogin(req, res) {
     });
   }
 }
-

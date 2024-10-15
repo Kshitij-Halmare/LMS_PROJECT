@@ -7,6 +7,7 @@ import fetchingActivity from '../components/fetchActivity.js';
 import AddCourses from '../components/AddCourse.js';
 import getCourses from '../components/getCourses.js';
 import authenticateToken from '../authenticate/authenticateUser.js';
+import authenticateTeacher from '../authenticate/TeacherAuthentication.js';
 
 const router = express.Router();
 
@@ -14,7 +15,7 @@ router.post('/signup', upload.single('image'), Signup);
 router.post('/login', handlelogin);
 router.post('/track', track);
 router.get('/:userId', fetchingActivity);
-router.post('/add-course',authenticateToken, upload.single('image'), AddCourses); 
+router.post('/add-course', authenticateToken, upload.single('image'), AddCourses); 
 router.get('/course', getCourses);
 
 export default router;

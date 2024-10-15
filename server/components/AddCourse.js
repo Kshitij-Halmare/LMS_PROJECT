@@ -4,10 +4,10 @@ import cloudinary from 'cloudinary';
 const AddCourses = async (req, res) => {
   try {
     // Extract course details from request body
-    const { title, description, category } = req.body;
-
+    const { title, description, category,price } = req.body;
+    const parsedPrice = parseFloat(price); 
     // Check if required fields are present
-    if (!title || !description || !category) {
+    if (!title || !description || !category || isNaN(parsedPrice)) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
@@ -19,7 +19,8 @@ const AddCourses = async (req, res) => {
       title,
       description,
       category: category.split(','),  // Convert categories into an array
-      image: result.secure_url,  // Use the URL returned by Cloudinary
+      image: result.secure_url, 
+      price:parsedPrice,
       createdBy: req.user.id  // Use the user ID from the token (set by protect middleware)
     });
 
@@ -30,6 +31,7 @@ const AddCourses = async (req, res) => {
     res.status(201).json({
       message: 'Course added successfully',
       course: savedCourse,
+      success:true
     });
   } catch (err) {
     console.error(err);
