@@ -1,30 +1,58 @@
-import mongoose from "mongoose"
-const courseSchema = mongoose.Schema({
+import mongoose from "mongoose";
+
+const lessonSchema = mongoose.Schema({
   title: {
     type: String,
-    required: true,
+    required: true
   },
   description: {
     type: String,
-    required: true,
+    required: true
+  },
+  videoUrl: {
+    type: String,
+    required: true
+  },
+  materialUrl: {
+    type: String
+  }
+});
+
+const courseSchema = mongoose.Schema({
+  title: {
+    type: String,
+    required: true
+  },
+  description: {
+    type: String,
+    required: true
   },
   category: {
-    type: [String], // Array of categories (e.g., checkboxes)
-    required: true,
+    type: [String], 
+    required: true
+  },
+  level: {
+    type: [String],
+    required: true
   },
   image: {
-    type: String, // URL or path to the course image
-    required: true,
+    type: String, 
+    required: true
   },
   price: {
-    type: Number, // Change to Number instead of String
+    type: Number,  // Corrected price to be a number
     required: true
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // Reference to the User model (teacher)
-    required: true,
+    ref: 'User', 
+    required: true
   },
+  lessons: {
+    type: [lessonSchema],
+    required: false,
+    default: []
+  }
 }, { timestamps: true });
 
 const Course = mongoose.model('Course', courseSchema);

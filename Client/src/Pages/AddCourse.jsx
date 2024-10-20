@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import toast from "react-hot-toast";
 import { useNavigate } from 'react-router-dom';
+
 function AddCourse() {
-  const navigate=useNavigate();
+  const navigate = useNavigate();
   const [user, setUser] = useState({
     title: '',
     description: '',
-    category: [],
+    category: '',
+    language: '',
+    level: '',
     image: null, 
-    price: 0
+    price: 0,
   });
 
   const handleImageChange = (e) => {
@@ -30,30 +33,50 @@ function AddCourse() {
   };
 
   const handleCategoryChange = (e) => {
-    const { value, checked } = e.target;
-    setUser((prevUser) => {
-      const newCategories = checked
-        ? [...prevUser.category, value]
-        : prevUser.category.filter((category) => category !== value);
-      return { ...prevUser, category: newCategories };
-    });
+    setUser((prevUser) => ({
+      ...prevUser,
+      category: e.target.value,
+    }));
+  };
+
+  const handleLanguageChange = (e) => {
+    setUser((prevUser) => ({
+      ...prevUser,
+      language: e.target.value,
+    }));
+  };
+
+  const handleLevelChange = (e) => {
+    setUser((prevUser) => ({
+      ...prevUser,
+      level: e.target.value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (user.price < 0) {
+      toast.error("Price cannot be negative");
+      return;
+    }
+
     const formData = new FormData();
     formData.append('title', user.title);
     formData.append('description', user.description);
-    formData.append('category', JSON.stringify(user.category));
+    formData.append('category', user.category);
     formData.append('image', user.image);
     formData.append('price', user.price);
+    formData.append('language', user.language);
+    formData.append('level', user.level);
+
     try {
       const response = await fetch(`${import.meta.env.VITE_SERVER_DOMAIN}/api/add-course`, {
         method: 'POST',
         body: formData,
         credentials: 'include',
       });
+      console.log(response);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -69,15 +92,16 @@ function AddCourse() {
         return;
       }
 
-      if(result.success){
+      if (result.success) {
+        const courseId = result.course._id;
         console.log('Course created successfully:', result);
-      toast('Course Created Successfully');
-      navigate("/existing-courses");
+        toast.success('Course Created Successfully');
+        navigate(`/existing-courses`, { state: { courseId } });
       }
-      
+
     } catch (error) {
       console.error('Error while adding course:', error);
-      toast(`Error: ${error.message || 'An unknown error occurred.'}`);
+      toast.error(`Error: ${error.message || 'An unknown error occurred.'}`);
     }
   };
 
@@ -111,15 +135,16 @@ function AddCourse() {
             required
           />
 
-          {/* Category - Checkboxes */}
+          {/* Category - Radio Buttons */}
           <div className="space-y-2">
-            <label className="block font-medium">Select Categories</label>
+            <label className="block font-medium">Select Category</label>
             {['Programming', 'Business', 'Design', 'Health & Fitness'].map((category) => (
               <div key={category} className="flex items-center">
                 <input
-                  type="checkbox"
+                  type="radio"
+                  name="category"
                   value={category}
-                  checked={user.category.includes(category)}
+                  checked={user.category === category}
                   onChange={handleCategoryChange}
                   className="mr-2"
                 />
@@ -127,11 +152,54 @@ function AddCourse() {
               </div>
             ))}
           </div>
-          
+
           {/* Price */}
-          <div className='relative top-3'>
-            <label htmlFor="price" className='ml-3 block font-medium'>Price</label>
-              <input type="number" name="price" value={user.price} onChange={handleInputChange} className="w-full p-3 border rounded-md" />
+          <div className="relative top-3">
+            <label htmlFor="price" className="ml-3 block font-medium">Price</label>
+            <input
+              type="number"
+              name="price"
+              value={user.price}
+              onChange={handleInputChange}
+              className="w-full p-3 border rounded-md"
+              required
+            />
+          </div>
+
+          {/* Language - Radio Buttons */}
+          <div className="space-y-2">
+            <label className="block font-medium">Select Language</label>
+            {['English', 'French', 'German', 'Spanish'].map((language) => (
+              <div key={language} className="flex items-center">
+                <input
+                  type="radio"
+                  name="language"
+                  value={language}
+                  checked={user.language === language}
+                  onChange={handleLanguageChange}
+                  className="mr-2"
+                />
+                <span>{language}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Level - Radio Buttons */}
+          <div className="space-y-2">
+            <label className="block font-medium">Select Level</label>
+            {['Beginner', 'Intermediate', 'Advanced'].map((level) => (
+              <div key={level} className="flex items-center">
+                <input
+                  type="radio"
+                  name="level"
+                  value={level}
+                  checked={user.level === level}
+                  onChange={handleLevelChange}
+                  className="mr-2"
+                />
+                <span>{level}</span>
+              </div>
+            ))}
           </div>
 
           {/* Image Upload */}
@@ -158,7 +226,7 @@ function AddCourse() {
                 <img
                   src={URL.createObjectURL(user.image)}
                   alt="Image Preview"
-                  className="w-20  h-20 -mt-4   object-cover rounded-md"
+                  className="w-20 h-20 -mt-4 object-cover rounded-md"
                 />
               </div>
             )}

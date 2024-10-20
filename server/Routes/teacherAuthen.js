@@ -1,6 +1,18 @@
 import express from "express";
 import authenticateToken from "../authenticate/authenticateUser.js";
 import authenticateTeacher from "../authenticate/TeacherAuthentication.js";
+import getTeacherCourses from "../components/getTeacherCourses.js";
+import UpdateCourse from "../components/UpdateCourse.js";
+import addLessons from "../components/addLessons.js";
+import upload from "../middleware/multer.js";
+import getAllData from "../components/getAllData.js";
+import DeleteCourse from "../components/DeleteCourse.js";
+import CourseHome from "../components/CourseHome.js";
 const teacherRouter=express.Router();
 teacherRouter.get("/ans",authenticateToken,authenticateTeacher);
+teacherRouter.get("/getCourses",authenticateToken,getTeacherCourses);
+teacherRouter.post("/addLesson/:courseId", upload.single('media'), addLessons);
+teacherRouter.get("/getAllData",getAllData);
+teacherRouter.delete("/deleteCourse",DeleteCourse);
+teacherRouter.get("/CourseHome/:id", CourseHome);
 export default teacherRouter;

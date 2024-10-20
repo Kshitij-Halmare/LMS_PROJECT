@@ -21,20 +21,20 @@ function Header() {
   };
 
   return (
-    <div className="h-16 bg-slate-950 flex justify-between items-center px-6">
-      <div className='text-white text-2xl font-serif'>
-        HELLO Dude!
+    <div className="h-16 bg-slate-900 flex justify-between items-center px-6 shadow-xl">
+      <div className='text-white text-xl font-serif'>
+        Welcome to Coursio!
       </div>
       
       <div className="flex items-center">
-        <input type="text" placeholder='Search' className='px-4 py-2 rounded-l-full focus:outline-none' />
-        <button className='bg-blue-500 py-3 px-4 rounded-r-full hover:bg-blue-600'>
+        <input type="text" placeholder='Search' className='px-4 py-2 rounded-l-full bg-blue-100 text-black focus:outline-none' />
+        <button className='bg-blue-800 py-3 px-4 rounded-r-full hover:bg-blue-950'>
           <FaSearch className='text-white' />
         </button>
       </div>
       
       <div>
-        <button onClick={handleTeacherSignup} className='p-2 m-3 hover:underline bg-slate-600 text-white border border-white rounded-md'>
+        <button onClick={handleTeacherSignup} className='px-3 py-1.5 m-3 hover:underline bg-slate-600 text-white border border-white rounded-md'>
           Teach on Coursio
         </button>
       </div>
