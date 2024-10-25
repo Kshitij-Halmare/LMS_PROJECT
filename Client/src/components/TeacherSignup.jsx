@@ -71,6 +71,7 @@ function TeacherSignup() {
       if (response.ok) {
         const data = await response.json();
         console.log(data);
+        localStorage.setItem("token",data.token)
         toast.success("User created successfully");
         navigate("/login");
       } else {

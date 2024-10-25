@@ -15,7 +15,7 @@ import AddCourse from "../Pages/AddCourse.jsx";
 import ExistingCourse from "../Pages/ExistingCourse.jsx";
 import Addlesson from "../Pages/Addlesson.jsx";
 import CourseHome from "../CoursePages/CourseHome.jsx";
-
+import CartPages from "../Pages/CartPages.jsx";
 const router = createBrowserRouter([
     {
         path: "/",
@@ -80,6 +80,9 @@ const router = createBrowserRouter([
             {
                 path: "/CourseHome/:id", 
                 element: <CourseHome />
+            },{
+                path:"/cart",
+                element:<CartPages/>
             }
         ]
     }

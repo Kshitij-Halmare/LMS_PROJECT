@@ -37,6 +37,9 @@ function Header() {
         <button onClick={handleTeacherSignup} className='px-3 py-1.5 m-3 hover:underline bg-slate-600 text-white border border-white rounded-md'>
           Teach on Coursio
         </button>
+        <button onClick={navigate("/cart")} className='px-3 py-1.5 m-3 hover:underline bg-slate-600 text-white border border-white rounded-md'>
+          Cart
+        </button>
       </div>
 
       <div className='flex text-white items-center gap-4'>

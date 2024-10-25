@@ -67,7 +67,7 @@ function Home() {
 
     fetchAllData();
   }, []);
-
+  console.log(allData.data);
   return (
     <div className="p-6 bg-slate-100 pl-10 min-h-screen">
       {/* Conditionally render buttons and content based on the user state */}
@@ -101,6 +101,7 @@ function Home() {
           </h1>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
             {allData?.data?.map((course) => (
               <CourseCard
                 key={course._id}
@@ -128,6 +129,7 @@ function Home() {
             {allData?.data?.map((course) => (
               <CourseCard
                 key={course._id}
+                id={course._id}
                 title={course.title}
                 description={course.description}
                 image={course.image}

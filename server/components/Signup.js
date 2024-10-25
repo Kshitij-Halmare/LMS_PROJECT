@@ -60,18 +60,11 @@ export default async function Signup(req, res) {
       process.env.JWT_SECRET, // Use your secret from .env
       { expiresIn: "24h" } // Token expiry set to 24 hours
     );
-
-    // Set the token in a secure cookie
-    res.cookie('token', token, {
-      httpOnly: true,    // Cookie can't be accessed via JavaScript
-      secure: process.env.NODE_ENV === 'production', // Ensure the cookie is sent only over HTTPS in production
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    });
-
     // Return success response (without sending sensitive data)
     return res.status(201).json({
       message: "User created successfully",
       success: true,
+      token,
       user: {
         id: user._id,
         name: user.name,

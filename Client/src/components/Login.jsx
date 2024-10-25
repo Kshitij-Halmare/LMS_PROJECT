@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
-import { MdEmail } from "react-icons/md";
-import { RiLockPasswordFill } from "react-icons/ri";
-import { FaEye, FaEyeSlash } from "react-icons/fa"; // Password visibility toggle icons
+import { MdEmail } from 'react-icons/md';
+import { RiLockPasswordFill } from 'react-icons/ri';
+import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Password visibility toggle icons
 import { useNavigate } from 'react-router-dom'; // useNavigate hook for navigation
-import toast from "react-hot-toast";
+import toast from 'react-hot-toast';
+import { useDispatch,useSelector } from 'react-redux';
+import { addActiveUser } from '../redux/CartSlice';
 
 function Login() {
-  const navigate = useNavigate(); // Corrected: useNavigate hook for navigation
+  const navigate = useNavigate();
   const [user, setUser] = useState({
-    email: "",
-    password: "",
+    email: '',
+    password: '',
   });
-
+  const dispatch = useDispatch();
   const [passwordVisible, setPasswordVisible] = useState(false); // Toggle password visibility
 
   const handleChange = (e) => {
@@ -23,43 +25,50 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    console.log("Form submitted"); // Check if handleSubmit is called
+  
     // Simple client-side validation for email and password
-    if (user.email === "" || user.password === "") {
-      toast.error("All fields are required");
+    if (user.email === '' || user.password === '') {
+      toast.error('All fields are required');
       return;
     }
-
-    // Simple email validation regex (for demo purposes)
+  
+    // Simple email validation regex
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(user.email)) {
-      toast.error("Please enter a valid email address");
+      toast.error('Please enter a valid email address');
       return;
     }
-
+  
     try {
       const req = await fetch(`${import.meta.env.VITE_SERVER_DOMAIN}/api/login`, {
         method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(user),
-        credentials: "include", // Ensure cookies are sent with the request
+        credentials: 'include',
       });
-
-      // Handle server response
+  
+      console.log("Response status:", req.status); // Log the response status
+  
       const data = await req.json();
+      console.log("data is", data.user.id); // Log the data received
+  
       if (req.ok) {
-        toast.success("User logged in successfully");
-        navigate("/home");
+        toast.success('User logged in successfully');
+        localStorage.setItem('token', data.token);
+        dispatch(addActiveUser({ id: data.user.id }));
+        navigate('/home');
       } else {
-        toast.error(data.message || "Login failed, please try again");
+        toast.error(data.message || 'Login failed, please try again');
       }
     } catch (error) {
-      toast.error("An error occurred, please try again");
-      console.error("Login error:", error); // Log the error for debugging
+      toast.error('An error occurred, please try again');
+      console.error('Login error:', error); // Log the error for debugging
     }
   };
+  
 
   return (
     <div className='w-full h-full bg-slate-300 px-96 py-32'>
@@ -83,7 +92,7 @@ function Login() {
           <div className="relative mb-6">
             <RiLockPasswordFill className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
-              type={passwordVisible ? "text" : "password"}
+              type={passwordVisible ? 'text' : 'password'}
               name="password"
               placeholder="Password"
               value={user.password}
@@ -108,7 +117,7 @@ function Login() {
           </button>
         </form>
         <p className='pt-4'>
-          Not yet signed up?{" "}
+          Not yet signed up?{' '}
           <span
             className="text-blue-500 hover:underline cursor-pointer"
             onClick={() => navigate('/signup')} // Navigate to signup page

@@ -1,7 +1,7 @@
 import Course from "../Model/CourseSchema.js";
 
 export default async function getAllData(req, res) {
-  console.log(req);
+  // console.log(req);
   try {
     const data = await Course.find();
     if (data && data.length > 0) {
