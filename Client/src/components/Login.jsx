@@ -5,7 +5,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Password visibility toggl
 import { useNavigate } from 'react-router-dom'; // useNavigate hook for navigation
 import toast from 'react-hot-toast';
 import { useDispatch,useSelector } from 'react-redux';
-import { addActiveUser } from '../redux/CartSlice';
+import { setActiveUser } from '../redux/CartSlice';
 
 function Login() {
   const navigate = useNavigate();
@@ -41,6 +41,7 @@ function Login() {
     }
   
     try {
+      console.log(user);
       const req = await fetch(`${import.meta.env.VITE_SERVER_DOMAIN}/api/login`, {
         method: 'POST',
         headers: {
@@ -53,12 +54,12 @@ function Login() {
       console.log("Response status:", req.status); // Log the response status
   
       const data = await req.json();
-      console.log("data is", data.user.id); // Log the data received
+      console.log("data is", data); // Log the data received
   
       if (req.ok) {
         toast.success('User logged in successfully');
         localStorage.setItem('token', data.token);
-        dispatch(addActiveUser({ id: data.user.id }));
+        dispatch(setActiveUser({ id: data.user.id }));
         navigate('/home');
       } else {
         toast.error(data.message || 'Login failed, please try again');

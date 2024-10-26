@@ -1,43 +1,38 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ConsistencyCalendar from '../components/Calender';
-import { toast } from 'react-hot-toast'; // Ensure toast is imported
+import { toast } from 'react-hot-toast';
 import CourseCard from './CourseCard';
 import headImage from "../assets/istockphoto-1396113348-612x612.jpg";
+import { jwtDecode } from 'jwt-decode';
 
 function Home() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null); // Changed to `null` to represent initial state correctly
-  const [allData, setAllData] = useState([]); // Initialize as empty array instead of null
+  const [user, setUser] = useState(null);
+  const [allData, setAllData] = useState([]);
 
   const handleAddNewCourse = () => {
-    navigate('/add-course'); // Redirect to Add Course page
+    navigate('/add-course');
   };
 
   const handleExistingCourse = () => {
-    navigate('/existing-courses'); // Redirect to Existing Courses page
+    navigate('/existing-courses');
   };
 
   console.log('Server Domain:', import.meta.env.VITE_SERVER_DOMAIN);
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await fetch(`${import.meta.env.VITE_SERVER_DOMAIN}/ans`, {
-          method: "GET",
-          credentials: 'include',
-        });
-        console.log("Response:", response);
-
-        const data = await response.json();
-        console.log(data);
-
-        if (data.success && data.user.profession === 'teacher') {
-          setUser(data.user);
+      const token = localStorage.getItem("token");
+      
+      if (token) {
+        try {
+          const decoded = jwtDecode(token); // Decode and verify the token
+          console.log(decoded); // Log the decoded token to the console
+          setUser(decoded); // Set user state with decoded token
+        } catch (error) {
+          console.error('Error decoding token', error);
+          toast.error('Error fetching user data');
         }
-      } catch (error) {
-        console.error('Error fetching user data', error);
-        toast.error('Error fetching user data');
       }
     };
 
@@ -49,12 +44,12 @@ function Home() {
       try {
         const response = await fetch(`${import.meta.env.VITE_SERVER_DOMAIN}/getAllData`, {
           method: 'GET',
-          credentials: 'include', // Use 'include' for credentials
+          credentials: 'include',
         });
 
         const data = await response.json();
         if (response.ok && data) {
-          setAllData(data); // Set data as allData
+          setAllData(data);
           console.log(data);
         } else {
           toast.error("Failed in retrieving data", data.message);
@@ -67,10 +62,11 @@ function Home() {
 
     fetchAllData();
   }, []);
+
   console.log(allData.data);
+  
   return (
     <div className="p-6 bg-slate-100 pl-10 min-h-screen">
-      {/* Conditionally render buttons and content based on the user state */}
       {user && user.profession === 'teacher' ? (
         <div className="overflow-y-auto">
           <div className="flex justify-end gap-4 mb-6">
@@ -101,7 +97,6 @@ function Home() {
           </h1>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
             {allData?.data?.map((course) => (
               <CourseCard
                 key={course._id}
@@ -110,8 +105,8 @@ function Home() {
                 description={course.description}
                 image={course.image}
                 price={course.price}
-                category={course.category}
-                level={course.level}
+                category={course.category[0]}
+                level={course.level[0]}
                 language={course.language}
               />
             ))}
@@ -120,7 +115,7 @@ function Home() {
       ) : (
         <>
           <div className="mb-6">
-            <h1 className=" font-serif text-2xl  font-semibold   text-gray-800 mb-4">
+            <h1 className="font-serif text-2xl font-semibold text-gray-800 mb-4">
               "Unlock Limitless Learning Opportunities"
             </h1>
           </div>
@@ -134,8 +129,8 @@ function Home() {
                 description={course.description}
                 image={course.image}
                 price={course.price}
-                category={course.category}
-                level={course.level}
+                category={course.category[0]}
+                level={course.level[0]}
                 language={course.language}
               />
             ))}

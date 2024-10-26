@@ -16,6 +16,7 @@ export default async function handlelogin(req, res) {
 
     // Find the user by email
     const user = await userModel.findOne({ email });
+    console.log(user);
     if (!user) {
       return res.status(404).json({
         message: "User does not exist, please sign up",
@@ -37,13 +38,13 @@ export default async function handlelogin(req, res) {
       {
         id: user._id,
         email: user.email,
-        profession: user.profession, // 'Student' or 'Teacher'
+        profession: user.profession, 
       },
       process.env.JWT_SECRET, // Your JWT secret from .env
       { expiresIn: "24h" } // Token expiry set to 24 hours
     );
 
-    // Return success response (without sending sensitive data)
+    console.log(token);
     return res.status(200).json({
       message: "User logged in successfully",
       success: true,
